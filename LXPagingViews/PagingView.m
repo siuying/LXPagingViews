@@ -151,7 +151,7 @@
         CGSize theContentSize = self.frame.size;
         theContentSize.width *= self.numberOfItems;
         self.contentSize = theContentSize;
-        if ([self.delegate conformsToProtocol:@protocol(PagingViewDelegate)] && [self.delegate respondsToSelector:@selector(pagingViewSelectedPageIndex:)]) {
+        if ([self.delegate respondsToSelector:@selector(pagingViewSelectedPageIndex:)]) {
             self.selectedPageIndex = [(id<PagingViewDelegate>)self.delegate pagingViewSelectedPageIndex:self];
         }
         self.needsReloadData = NO;
@@ -192,12 +192,10 @@
     // Remove reusable views that is out of sight.
     NSMutableArray *theVisibleReusableViewsToBeRemoved = [[NSMutableArray alloc] init];
     [self.visibleReusableViews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        if ([obj conformsToProtocol:@protocol(ReusableView)]) {
-            UIView<ReusableView> *theReusableView = (UIView<ReusableView> *)obj;
-            NSUInteger theIndex = (NSUInteger)floorf(CGRectGetMinX(theReusableView.frame) / thePageWidth);
-            if ((theIndex < theFromIndex) || (theIndex > theToIndex)) {
-                [theVisibleReusableViewsToBeRemoved addObject:theReusableView];
-            }
+        UIView<ReusableView> *theReusableView = (UIView<ReusableView> *)obj;
+        NSUInteger theIndex = (NSUInteger)floorf(CGRectGetMinX(theReusableView.frame) / thePageWidth);
+        if ((theIndex < theFromIndex) || (theIndex > theToIndex)) {
+            [theVisibleReusableViewsToBeRemoved addObject:theReusableView];
         }
     }];
     
@@ -293,10 +291,8 @@
 }
 
 - (void)willRemoveSubview:(UIView *)theSubview {
-    if ([theSubview conformsToProtocol:@protocol(ReusableView)]) {
-        [self.visibleReusableViews removeObject:theSubview];
-        [self enqueueReusableView:(UIView<ReusableView> *)theSubview];
-    }
+    [self.visibleReusableViews removeObject:theSubview];
+    [self enqueueReusableView:(UIView<ReusableView> *)theSubview];
 }
 
 - (void)willMoveToSuperview:(UIView *)theNewSuperview {
